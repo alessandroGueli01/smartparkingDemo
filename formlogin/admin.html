@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin - Pissir</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: 'Poppins', sans-serif; background: #1f2029; color: #ffeba7;
+    }
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 24px; }
+    .topbar {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #2b2e38; color: #ffeba7; padding: 18px 22px; border-radius: 16px;
+      margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+    }
+    .topbar h2 { margin: 0; }
+    .topbar button {
+      border: none; background: #ffeba7; color: #020305; padding: 10px 14px; border-radius: 10px; cursor: pointer; font-weight: 700;
+    }
+    .cards {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: #2b2e38; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+    .label { color: #c4c3ca; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .value { font-size: 2rem; font-weight: 700; margin-top: 8px; }
+    .status-good { color: #4ade80; }
+    .status-warn { color: #fbbf24; }
+    .status-danger { color: #f87171; }
+    .panel {
+      background: #2b2e38; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.15); margin-bottom: 18px;
+    }
+    .parking-grid {
+      display: grid; grid-template-columns: repeat(10, minmax(34px, 1fr)); gap: 8px;
+      margin-top: 14px; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 14px;
+    }
+    .spot {
+      min-height: 52px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; flex-direction:column; font-size: 0.7rem; font-weight: 700; text-align:center;
+    }
+    .spot.free { background: rgba(34,197,94,0.15); color: #d1fae5; border-color: rgba(34,197,94,0.35); }
+    .spot.booked { background: rgba(251,191,36,0.15); color: #fef3c7; border-color: rgba(251,191,36,0.35); }
+    .spot.occupied { background: rgba(239,68,68,0.15); color: #fee2e2; border-color: rgba(239,68,68,0.4); }
+    .spot.charging { background: rgba(96,165,250,0.15); color: #dbeafe; border-color: rgba(96,165,250,0.5); }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: left; }
+    th { background: rgba(255,255,255,0.04); color: #ffeba7; }
+    .tag {
+      display: inline-block; padding: 6px 8px; border-radius: 999px; font-size: 12px; font-weight: 700;
+    }
+    .tag.free { background: rgba(34,197,94,0.16); color: #dcfce7; }
+    .tag.booked { background: rgba(251,191,36,0.18); color: #fef3c7; }
+    .tag.occupied { background: rgba(239,68,68,0.16); color: #fee2e2; }
+    .tag.charging { background: rgba(96,165,250,0.16); color: #dbeafe; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h2>Dashboard amministratore</h2>
+      <button id="logoutBtn" type="button">Logout</button>
+    </div>
+
+    <div id="adminContent">
+      <div class="cards">
+        <div class="card">
+          <div class="label">Posti liberi</div>
+          <div class="value status-good" id="freeSpots">0</div>
+        </div>
+        <div class="card">
+          <div class="label">Prenotati</div>
+          <div class="value status-warn" id="bookedSpots">0</div>
+        </div>
+        <div class="card">
+          <div class="label">Occupati</div>
+          <div class="value status-danger" id="occupiedSpots">0</div>
+        </div>
+        <div class="card">
+          <div class="label">In carica</div>
+          <div class="value status-good" id="chargingNow">0</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Stato posti</h3>
+        <div id="parkingGrid" class="parking-grid" aria-live="polite"></div>
+        <table>
+          <thead>
+            <tr>
+              <th>Posto</th>
+              <th>Stato</th>
+              <th>Veicolo</th>
+              <th>Batteria</th>
+              <th>Utente</th>
+            </tr>
+          </thead>
+          <tbody id="placeTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <h3>Prenotazioni per data</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Data e ora</th>
+              <th>Posto</th>
+              <th>Veicolo</th>
+              <th>Utente</th>
+              <th>Pagamento</th>
+            </tr>
+          </thead>
+          <tbody id="reservationsTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <h3>Pagamenti</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Pagamento</th>
+              <th>Utente</th>
+              <th>Importo</th>
+              <th>Stato</th>
+            </tr>
+          </thead>
+          <tbody id="paymentsTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <h3>Auto passate nel parcheggio</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Targa</th>
+              <th>Ingresso</th>
+              <th>Uscita</th>
+              <th>Esito</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function getAuth() {
+      try {
+        return JSON.parse(localStorage.getItem('pissir_auth') || 'null');
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function requireAuth() {
+      const auth = getAuth();
+      const isAdmin = auth && auth.user && auth.user.tipo === 'admin';
+      if (!auth || !auth.token || !isAdmin) {
+        window.location.href = '/';
+        return false;
+      }
+      return true;
+    }
+
+    function seedDefaultState() {
+      const defaultState = Array.from({ length: 20 }, (_, index) => {
+        const isMwbot = index >= 10;
+        const status = (index % 6 === 0) ? 'occupied' : (index % 4 === 0 ? 'charging' : 'free');
+        return {
+          id: index + 1,
+          type: isMwbot ? 'mwbot' : 'standard',
+          status: isMwbot ? (index % 3 === 0 ? 'charging' : status) : status,
+          battery: (index % 4 === 0 && (index % 6 === 0 || index % 3 === 0)) ? 45 + ((index * 7) % 40) : 0,
+          user: null,
+          plate: null
+        };
+      });
+
+      localStorage.setItem('pissir_parking_state', JSON.stringify(defaultState));
+      return defaultState;
+    }
+
+    function loadParkingState() {
+      const stored = localStorage.getItem('pissir_parking_state');
+      if (!stored) return seedDefaultState();
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length === 20) return parsed;
+      } catch (e) {}
+      return seedDefaultState();
+    }
+
+    function loadPayments() {
+      const stored = localStorage.getItem('pissir_payments');
+      if (!stored) return [];
+      try {
+        return JSON.parse(stored);
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function loadReservations() {
+      const stored = localStorage.getItem('pissir_reservations');
+      if (!stored) return [];
+      try {
+        const reservations = JSON.parse(stored);
+        return Array.isArray(reservations) ? reservations : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function loadHistory() {
+      const stored = localStorage.getItem('pissir_history');
+      if (!stored) return [];
+      try {
+        return JSON.parse(stored);
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function renderDashboard() {
+      const places = loadParkingState();
+      const reservations = loadReservations();
+      const payments = loadPayments();
+      const history = loadHistory();
+
+      const free = places.filter(p => p.status === 'free').length;
+      const today = new Date();
+      const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      const booked = reservations.filter(reservation => reservation.date === todayString && reservation.status === 'booked').length;
+      const occupied = places.filter(p => p.status === 'occupied').length;
+      const charging = places.filter(p => p.status === 'charging').length;
+
+      document.getElementById('freeSpots').textContent = free;
+      document.getElementById('bookedSpots').textContent = booked;
+      document.getElementById('occupiedSpots').textContent = occupied;
+      document.getElementById('chargingNow').textContent = charging;
+
+      const tbodyPlaces = document.getElementById('placeTableBody');
+      tbodyPlaces.innerHTML = places.map(p => {
+        const stateClass = p.status === 'free' ? 'free' : p.status === 'booked' ? 'booked' : p.status === 'charging' ? 'charging' : 'occupied';
+        return `
+          <tr>
+            <td>${p.id}</td>
+            <td><span class="tag ${stateClass}">${p.status}</span></td>
+            <td>${p.plate || '-'}</td>
+            <td>${p.status === 'charging' ? `${p.battery || 0}%` : '-'}</td>
+            <td>${p.user || '-'}</td>
+          </tr>
+        `;
+      }).join('');
+
+      const tbodyReservations = document.getElementById('reservationsTableBody');
+      const activeReservations = reservations.filter(reservation => reservation.status !== 'cancelled');
+      tbodyReservations.innerHTML = activeReservations.length
+        ? activeReservations.map(reservation => `
+            <tr>
+              <td>${reservation.date || '-'} ${reservation.time || ''}</td>
+              <td>#${reservation.placeId || '-'}</td>
+              <td>${reservation.plate || '-'} · ${reservation.model || '-'}</td>
+              <td>${reservation.user || '-'}</td>
+              <td>${reservation.paymentStatus || 'in attesa'}</td>
+            </tr>
+          `).join('')
+        : '<tr><td colspan="5">Nessuna prenotazione registrata</td></tr>';
+
+      const grid = document.getElementById('parkingGrid');
+      grid.innerHTML = places.map((spot) => {
+        const stateClass = spot.status === 'free' ? 'free' : spot.status === 'booked' ? 'booked' : spot.status === 'charging' ? 'charging' : 'occupied';
+        return `
+          <div class="spot ${stateClass}" title="Posto ${spot.id} - ${spot.status}">
+            <span>${spot.id}</span>
+            <span>${spot.type === 'mwbot' ? 'MW' : 'STD'}</span>
+            <span>${spot.status === 'charging' || spot.status === 'occupied' ? `${spot.battery || 0}%` : '—'}</span>
+          </div>
+        `;
+      }).join('');
+
+      const tbodyPayments = document.getElementById('paymentsTableBody');
+      tbodyPayments.innerHTML = payments.length
+        ? payments.map(p => `
+            <tr>
+              <td>#${p.id}</td>
+              <td>${p.user || '-'}</td>
+              <td>${p.amount || '€ 0,00'}</td>
+              <td>${p.status || 'in attesa'}</td>
+            </tr>
+          `).join('')
+        : '<tr><td colspan="4">Nessun pagamento registrato</td></tr>';
+
+      const tbodyHistory = document.getElementById('historyTableBody');
+      tbodyHistory.innerHTML = history.length
+        ? history.map(h => `
+            <tr>
+              <td>${h.plate || '-'}</td>
+              <td>${h.entry || '-'}</td>
+              <td>${h.exit || '-'}</td>
+              <td>${h.status || '-'}</td>
+            </tr>
+          `).join('')
+        : '<tr><td colspan="4">Nessuna auto registrata</td></tr>';
+    }
+
+    function clearPrivacy() {
+      localStorage.removeItem('pissir_auth');
+      sessionStorage.clear();
+    }
+
+    function protectHistoryNavigation() {
+      window.history.pushState(null, '', window.location.href);
+      window.addEventListener('popstate', () => {
+        clearPrivacy();
+        window.location.href = '/';
+      });
+
+      window.addEventListener('pagehide', () => {
+        clearPrivacy();
+      });
+
+      window.addEventListener('beforeunload', () => {
+        clearPrivacy();
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!requireAuth()) return;
+      renderDashboard();
+      protectHistoryNavigation();
+
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        clearPrivacy();
+        window.location.href = '/';
+      });
+    });
+  </script>
+</body>
+</html>

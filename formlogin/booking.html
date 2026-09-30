@@ -1,0 +1,907 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prenota posto - Pissir</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700,800,900');
+
+    :root {
+      --bg: #1f2029;
+      --panel: #2b2e38;
+      --panel-soft: #242833;
+      --text: #ffeba7;
+      --muted: #c4c3ca;
+      --green: #22c55e;
+      --red: #ef4444;
+      --amber: #f59e0b;
+      --blue: #60a5fa;
+      --black: #020305;
+      --line: rgba(255,255,255,0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .page-shell {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 28px 20px 50px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: rgba(43,46,56,0.96);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px 24px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+      margin-bottom: 22px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 2vw, 2.4rem);
+    }
+
+    .eyebrow {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .user-badge {
+      background: var(--text);
+      color: var(--black);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 22px;
+      margin-bottom: 24px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+    }
+
+    h2, h3, h4, p { margin-top: 0; }
+
+    .section-tag {
+      display: inline-block;
+      background: rgba(255,235,167,0.08);
+      border: 1px solid rgba(255,235,167,0.2);
+      color: var(--text);
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      height: 48px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      background: #1f2029;
+      color: #f7f7f7;
+      padding: 0 14px;
+      font: inherit;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      outline: 2px solid rgba(255,235,167,0.2);
+      border-color: rgba(255,235,167,0.35);
+    }
+
+    .slider-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--text);
+    }
+
+    .battery-value {
+      min-width: 52px;
+      text-align: right;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .checkbox-row input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--text);
+    }
+
+    .hidden { display: none !important; }
+
+    .summary {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      color: var(--muted);
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .summary-row:last-child {
+      border-bottom: none;
+    }
+
+    .summary-row strong {
+      color: var(--text);
+    }
+
+    .primary-btn {
+      border: none;
+      border-radius: 10px;
+      background: var(--text);
+      color: var(--black);
+      padding: 14px 18px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: filter 0.2s ease;
+    }
+
+    .primary-btn:hover {
+      filter: brightness(1.08);
+    }
+
+    .secondary-btn {
+      border: 1px solid rgba(255,255,255,0.15);
+      background: transparent;
+      color: var(--text);
+      padding: 12px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .status-box {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.35);
+      color: #d1fae5;
+      display: none;
+    }
+
+    .status-box.error {
+      background: rgba(239,68,68,0.12);
+      border-color: rgba(239,68,68,0.35);
+      color: #fee2e2;
+    }
+
+    .receipt {
+      display: none;
+      margin-top: 18px;
+      background: rgba(34,197,94,0.08);
+      border: 1px solid rgba(34,197,94,0.35);
+      border-radius: 14px;
+      padding: 18px;
+      color: #d1fae5;
+    }
+
+    .receipt h3 {
+      margin-bottom: 12px;
+    }
+
+    .receipt-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 18px;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .matrix-panel {
+      margin-bottom: 22px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin-top: 14px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .parking-grid {
+      display: grid;
+      grid-template-columns: repeat(10, minmax(34px, 1fr));
+      gap: 8px;
+      background: rgba(255,255,255,0.02);
+      padding: 12px;
+      border-radius: 14px;
+      margin-top: 16px;
+    }
+
+    .spot {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 9px;
+      min-height: 58px;
+      padding: 6px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .spot:hover {
+      transform: translateY(-1px);
+    }
+
+    .spot.free { background: rgba(34,197,94,0.14); border-color: rgba(34,197,94,0.35); color: #d1fae5; }
+    .spot.occupied { background: rgba(239,68,68,0.14); border-color: rgba(239,68,68,0.35); color: #fee2e2; }
+    .spot.charging { background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35); color: #dbeafe; }
+    .spot.reserved { background: rgba(245,158,11,0.16); border-color: rgba(245,158,11,0.45); color: #fef3c7; }
+    .spot:disabled { cursor: not-allowed; opacity: 0.72; }
+
+    .spot-number {
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .spot-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+
+    .spot-bat {
+      font-size: 0.64rem;
+      font-weight: 700;
+    }
+
+    @media (max-width: 900px) {
+      .layout, .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div>
+        <span class="eyebrow">Pissir</span>
+        <h1>Prenota il tuo posto</h1>
+      </div>
+      <div class="user-badge" id="userBadge">Utente</div>
+    </header>
+
+    <section class="panel matrix-panel">
+      <span class="section-tag">Disponibilità</span>
+      <h2>Disponibilità per la data selezionata</h2>
+      <p class="small">Il posto è riservato per l’intera giornata. Seleziona una data nel modulo.</p>
+      <div class="legend">
+        <span class="legend-item"><span class="dot" style="background: var(--green);"></span> Libero</span>
+        <span class="legend-item"><span class="dot" style="background: var(--amber);"></span> Prenotato</span>
+        <span class="legend-item"><span class="dot" style="background: var(--red);"></span> Occupato</span>
+        <span class="legend-item"><span class="dot" style="background: var(--blue);"></span> In carica</span>
+      </div>
+      <div id="parkingGrid" class="parking-grid" aria-live="polite"></div>
+    </section>
+
+    <main class="layout">
+      <section class="panel">
+        <span class="section-tag">Prenotazione</span>
+        <h2>Dati veicolo e parcheggio</h2>
+
+        <form id="bookingForm">
+          <div class="grid-2">
+            <label class="field">
+              <span>Targa</span>
+              <input id="plate" type="text" maxlength="10" placeholder="AB123CD" required>
+            </label>
+
+            <label class="field">
+              <span>Modello</span>
+              <input id="model" type="text" placeholder="Tesla Model 3" required>
+            </label>
+          </div>
+
+          <div class="grid-2">
+            <label class="field">
+              <span>Posto consigliato</span>
+              <input id="placeId" type="number" min="1" max="20" value="1" required>
+            </label>
+
+            <label class="field">
+              <span>Data prenotazione</span>
+              <input id="bookingDate" type="date" required>
+            </label>
+          </div>
+
+          <label class="field">
+            <span>Orario di arrivo</span>
+            <input id="bookingTime" type="time" required>
+          </label>
+
+          <label class="checkbox-row">
+            <input id="isElectric" type="checkbox">
+            <span>Veicolo elettrico / MWBOT</span>
+          </label>
+
+          <label class="field hidden" id="batteryField">
+            <span>Percentuale batteria</span>
+            <div class="slider-wrap">
+              <input id="batteryPercent" type="range" min="10" max="100" step="1" value="80">
+              <span id="batteryValue" class="battery-value">80%</span>
+            </div>
+          </label>
+
+          <div class="summary">
+            <div class="summary-row"><span>Tariffa base</span><strong id="basePrice">€ 12,00</strong></div>
+            <div class="summary-row"><span>Ricarica</span><strong id="chargePrice">€ 0,00</strong></div>
+            <div class="summary-row"><span>Totale</span><strong id="totalPrice">€ 12,00</strong></div>
+          </div>
+
+          <button type="submit" class="primary-btn">Prenota posto</button>
+          <div id="bookingStatus" class="status-box" aria-live="polite"></div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <span class="section-tag">Pagamento</span>
+        <h2>Dettagli carta</h2>
+
+        <form id="paymentForm">
+          <label class="field">
+            <span>Numero carta</span>
+            <input id="cardNumber" type="text" inputmode="numeric" maxlength="19" placeholder="1234 5678 9012 3456" required>
+          </label>
+
+          <label class="field">
+            <span>Titolare carta</span>
+            <input id="cardName" type="text" placeholder="Mario Rossi" required>
+          </label>
+
+          <div class="grid-2">
+            <label class="field">
+              <span>Scadenza</span>
+              <input id="cardExpiry" type="text" maxlength="5" placeholder="MM/YY" required>
+            </label>
+
+            <label class="field">
+              <span>CVV</span>
+              <input id="cardCvv" type="password" maxlength="3" inputmode="numeric" placeholder="123" required>
+            </label>
+          </div>
+
+          <button type="submit" class="primary-btn">Paga e conferma</button>
+          <button type="button" id="backToBooking" class="secondary-btn">Torna alla home</button>
+        </form>
+
+        <div id="receipt" class="receipt" aria-live="polite">
+          <h3>Ricevuta di prenotazione</h3>
+          <div class="receipt-grid" id="receiptContent"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const auth = JSON.parse(localStorage.getItem('pissir_auth') || 'null');
+    if (!auth || !auth.token) {
+      window.location.href = '/';
+    }
+
+    const userBadge = document.getElementById('userBadge');
+    if (userBadge && auth && auth.user) {
+      userBadge.textContent = auth.user.username || 'Utente';
+    }
+
+    const bookingDateInput = document.getElementById('bookingDate');
+    const bookingTimeInput = document.getElementById('bookingTime');
+    const batteryField = document.getElementById('batteryField');
+    const isElectricCheckbox = document.getElementById('isElectric');
+    const batteryPercentInput = document.getElementById('batteryPercent');
+    const batteryValueEl = document.getElementById('batteryValue');
+    const basePriceEl = document.getElementById('basePrice');
+    const chargePriceEl = document.getElementById('chargePrice');
+    const totalPriceEl = document.getElementById('totalPrice');
+    const bookingStatusEl = document.getElementById('bookingStatus');
+    const receiptBox = document.getElementById('receipt');
+    const receiptContent = document.getElementById('receiptContent');
+
+    function loadParkingState() {
+      const stored = localStorage.getItem('pissir_parking_state');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length === 20) return parsed;
+        } catch (e) {}
+      }
+
+      const state = Array.from({ length: 20 }, (_, index) => {
+        const isMwbot = index >= 10;
+        const type = isMwbot ? 'mwbot' : 'standard';
+        const status = isMwbot
+          ? (index % 5 === 0 ? 'occupied' : index % 3 === 0 ? 'charging' : 'free')
+          : (index % 6 === 0 ? 'occupied' : index % 4 === 0 ? 'charging' : 'free');
+
+        return {
+          id: index + 1,
+          type,
+          status,
+          battery: status === 'charging' ? 35 + ((index * 9) % 55) : 0,
+          user: status !== 'free' ? `user-${((index + 1) % 7) + 1}` : null,
+          plate: status !== 'free' ? ['AB123CD', 'RT258LM', 'XY789ZZ', 'EF456GH'][index % 4] : null
+        };
+      });
+
+      localStorage.setItem('pissir_parking_state', JSON.stringify(state));
+      return state;
+    }
+
+    function saveParkingState(state) {
+      localStorage.setItem('pissir_parking_state', JSON.stringify(state));
+    }
+
+    function localDateString(date = new Date()) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function loadReservations() {
+      try {
+        const reservations = JSON.parse(localStorage.getItem('pissir_reservations') || '[]');
+        return Array.isArray(reservations) ? reservations : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function getSpotAvailability(spot, date) {
+      if (!spot || !date || date < localDateString()) return 'unavailable';
+
+      const hasReservation = loadReservations().some((reservation) =>
+        Number(reservation.placeId) === Number(spot.id) &&
+        reservation.date === date &&
+        reservation.status !== 'cancelled'
+      );
+      if (hasReservation) return 'reserved';
+
+      if (date === localDateString() && ['occupied', 'charging', 'booked'].includes(spot.status)) {
+        return spot.status;
+      }
+      return 'free';
+    }
+
+    function getAvailableSpot(type, date) {
+      const state = loadParkingState();
+      const filtered = state.filter((spot) => spot.type === type && getSpotAvailability(spot, date) === 'free');
+      if (!filtered.length) return null;
+      const pick = filtered[Math.floor(Math.random() * filtered.length)];
+      return pick.id;
+    }
+
+    function renderParkingGrid() {
+      const state = loadParkingState();
+      const date = bookingDateInput.value;
+      const grid = document.getElementById('parkingGrid');
+      grid.innerHTML = state.map((spot) => {
+        const status = getSpotAvailability(spot, date);
+        const label = spot.type === 'mwbot' ? 'MW' : 'STD';
+        const batteryText = status === 'charging' ? `${spot.battery}%` : status === 'reserved' ? 'Pren.' : status === 'occupied' ? 'Occ.' : '—';
+        const isUnavailable = status !== 'free';
+
+        return `
+          <button class="spot ${status}" type="button" data-spot="${spot.id}" aria-label="Posto ${spot.id}, ${status}" ${isUnavailable ? 'disabled' : ''}>
+            <span class="spot-number">${spot.id}</span>
+            <span class="spot-label">${label}</span>
+            <span class="spot-bat">${batteryText}</span>
+          </button>
+        `;
+      }).join('');
+
+      document.querySelectorAll('.spot').forEach((button) => {
+        button.addEventListener('click', () => {
+          const spotId = Number(button.dataset.spot);
+          const spotState = state.find((spot) => spot.id === spotId);
+          const requiredType = isElectricCheckbox.checked ? 'mwbot' : 'standard';
+          if (spotState && spotState.type !== requiredType) {
+            showStatus('Il tipo di posto non corrisponde al veicolo selezionato.', true);
+            return;
+          }
+          document.getElementById('placeId').value = spotId;
+          if (spotState) {
+            showStatus(`Posto #${spotId} selezionato tra quelli disponibili.`);
+          }
+        });
+      });
+    }
+
+    const today = new Date();
+    const nextDay = new Date(today);
+    nextDay.setDate(today.getDate() + 1);
+    bookingDateInput.min = localDateString(today);
+    bookingDateInput.value = localDateString(nextDay);
+    bookingTimeInput.value = '09:00';
+
+    function euro(value) {
+      return `€ ${Number(value).toFixed(2).replace('.', ',')}`;
+    }
+
+    function updatePricing() {
+      const battery = Number(batteryPercentInput.value || 0);
+      const isElectric = isElectricCheckbox.checked;
+      const base = 12;
+      const charge = isElectric ? Math.max(0, (100 - battery) * 0.18) : 0;
+      const total = base + charge;
+
+      batteryValueEl.textContent = `${battery}%`;
+      basePriceEl.textContent = euro(base);
+      chargePriceEl.textContent = euro(charge);
+      totalPriceEl.textContent = euro(total);
+    }
+
+    function showStatus(message, isError = false) {
+      bookingStatusEl.textContent = message;
+      bookingStatusEl.style.display = 'block';
+      bookingStatusEl.classList.toggle('error', isError);
+    }
+
+    function hideStatus() {
+      bookingStatusEl.style.display = 'none';
+      bookingStatusEl.classList.remove('error');
+    }
+
+    function formatCardNumber(value) {
+      return value.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
+    }
+
+    function formatExpiry(value) {
+      const digits = value.replace(/\D/g, '').slice(0, 4);
+      if (digits.length <= 2) return digits;
+      return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+    }
+
+    document.getElementById('cardNumber').addEventListener('input', function () {
+      this.value = formatCardNumber(this.value);
+    });
+
+    document.getElementById('cardExpiry').addEventListener('input', function () {
+      this.value = formatExpiry(this.value);
+    });
+
+    isElectricCheckbox.addEventListener('change', () => {
+      batteryField.classList.toggle('hidden', !isElectricCheckbox.checked);
+      setSuggestedSpot();
+      renderParkingGrid();
+      updatePricing();
+    });
+
+    batteryPercentInput.addEventListener('input', updatePricing);
+    bookingDateInput.addEventListener('change', () => {
+      draftBooking = null;
+      setSuggestedSpot();
+      renderParkingGrid();
+      hideStatus();
+    });
+
+    function setSuggestedSpot() {
+      const type = isElectricCheckbox.checked ? 'mwbot' : 'standard';
+      const suggested = getAvailableSpot(type, bookingDateInput.value);
+      const placeInput = document.getElementById('placeId');
+      placeInput.value = suggested || '';
+    }
+
+    let draftBooking = null;
+
+    document.getElementById('bookingForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      hideStatus();
+
+      const plate = document.getElementById('plate').value.trim().toUpperCase();
+      const model = document.getElementById('model').value.trim();
+      const placeId = Number(document.getElementById('placeId').value);
+      const bookingDate = bookingDateInput.value;
+      const bookingTime = bookingTimeInput.value;
+      const isElectric = isElectricCheckbox.checked;
+      let battery = Number(batteryPercentInput.value || 0);
+
+      if (!plate || !model || !bookingDate || !bookingTime) {
+        showStatus('Compila tutti i campi della prenotazione.', true);
+        return;
+      }
+
+      if (new Date(`${bookingDate}T${bookingTime}`) < new Date()) {
+        showStatus('La data e l’orario di arrivo devono essere futuri.', true);
+        return;
+      }
+
+      if (!Number.isInteger(placeId) || placeId < 1 || placeId > 20) {
+        showStatus('Il posto deve essere compreso tra 1 e 20.', true);
+        return;
+      }
+
+      try {
+        const plateCheck = await fetch('/api/plates/check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plate, username: auth.user.username })
+        });
+        if (plateCheck.status === 409) {
+          showStatus('Questa targa risulta già registrata a un altro utente.', true);
+          return;
+        }
+        if (!plateCheck.ok) {
+          showStatus('La targa inserita non è valida.', true);
+          return;
+        }
+      } catch (error) {
+        showStatus('Non è stato possibile verificare la targa. Riprova.', true);
+        return;
+      }
+
+      const state = loadParkingState();
+      const selectedSpot = state.find((spot) => spot.id === placeId);
+      const requiredType = isElectric ? 'mwbot' : 'standard';
+      if (!selectedSpot || selectedSpot.type !== requiredType) {
+        showStatus('Scegli un posto del tipo corretto per il veicolo.', true);
+        setSuggestedSpot();
+        return;
+      }
+
+      const availability = getSpotAvailability(selectedSpot, bookingDate);
+      if (availability !== 'free') {
+        showStatus(availability === 'reserved'
+          ? `Il posto #${placeId} è già prenotato per il ${bookingDate}. Ti assegno un posto libero.`
+          : 'Il posto non è disponibile per la data selezionata. Ti assegno un posto libero.', true);
+        setSuggestedSpot();
+        renderParkingGrid();
+        return;
+      }
+
+      if (isElectric) {
+        if (!Number.isFinite(battery) || battery < 10 || battery > 100) {
+          showStatus('La batteria deve essere compresa tra 10% e 100%.', true);
+          return;
+        }
+      } else {
+        battery = 0;
+      }
+
+      draftBooking = {
+        plate,
+        model,
+        placeId,
+        date: bookingDate,
+        time: bookingTime,
+        isElectric,
+        battery,
+        total: Number((12 + (isElectric ? Math.max(0, (100 - battery) * 0.18) : 0)).toFixed(2))
+      };
+
+      showStatus('Prenotazione pronta: puoi procedere al pagamento.');
+    });
+
+    document.getElementById('paymentForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      if (!draftBooking) {
+        showStatus('Prima salva la prenotazione.', true);
+        return;
+      }
+
+      const cardNumber = document.getElementById('cardNumber').value.replace(/\s+/g, '');
+      const cardName = document.getElementById('cardName').value.trim();
+      const cardExpiry = document.getElementById('cardExpiry').value.trim();
+      const cardCvv = document.getElementById('cardCvv').value.trim();
+
+      if (!/^\d{16}$/.test(cardNumber)) {
+        showStatus('La carta deve contenere 16 numeri.', true);
+        return;
+      }
+
+      if (!cardName) {
+        showStatus('Inserisci il nome del titolare della carta.', true);
+        return;
+      }
+
+      if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(cardExpiry)) {
+        showStatus('La data di scadenza deve essere nel formato MM/YY.', true);
+        return;
+      }
+
+      if (!/^\d{3}$/.test(cardCvv)) {
+        showStatus('Il CVV deve contenere 3 numeri.', true);
+        return;
+      }
+
+      try {
+        const plateRegistration = await fetch('/api/plates/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            plate: draftBooking.plate,
+            username: auth.user.username,
+            model: draftBooking.model
+          })
+        });
+        if (plateRegistration.status === 409) {
+          showStatus('Questa targa è stata registrata da un altro utente. La prenotazione non è stata pagata.', true);
+          return;
+        }
+        if (!plateRegistration.ok) {
+          showStatus('Non è stato possibile registrare la targa. Riprova.', true);
+          return;
+        }
+      } catch (error) {
+        showStatus('Servizio di verifica targhe non raggiungibile. Riprova.', true);
+        return;
+      }
+
+      const selectedSpot = loadParkingState().find((spot) => spot.id === draftBooking.placeId);
+      if (getSpotAvailability(selectedSpot, draftBooking.date) !== 'free') {
+        draftBooking = null;
+        showStatus('Il posto è stato prenotato da un altro utente per quella data. Selezionane un altro.', true);
+        renderParkingGrid();
+        setSuggestedSpot();
+        return;
+      }
+
+      const reservationCode = `PISSIR-${Date.now().toString().slice(-6)}`;
+      localStorage.setItem('pissir_availability_date', draftBooking.date);
+      const reservationRecord = {
+        id: Date.now(),
+        code: reservationCode,
+        placeId: draftBooking.placeId,
+        date: draftBooking.date,
+        time: draftBooking.time,
+        user: auth.user.username,
+        plate: draftBooking.plate,
+        model: draftBooking.model,
+        type: draftBooking.isElectric ? 'mwbot' : 'standard',
+        battery: draftBooking.isElectric ? draftBooking.battery : null,
+        amount: euro(draftBooking.total),
+        status: 'booked',
+        paymentStatus: 'pagato'
+      };
+      const reservations = loadReservations();
+      localStorage.setItem('pissir_reservations', JSON.stringify([...reservations, reservationRecord]));
+
+      const paymentRecord = {
+        id: Date.now(),
+        reservationId: reservationRecord.id,
+        user: auth.user.username,
+        amount: euro(draftBooking.total),
+        status: 'pagato',
+        date: new Date().toISOString(),
+        parkingDate: draftBooking.date,
+        placeId: draftBooking.placeId
+      };
+
+      const payments = JSON.parse(localStorage.getItem('pissir_payments') || '[]');
+      localStorage.setItem('pissir_payments', JSON.stringify([...payments, paymentRecord]));
+
+      const paymentTime = new Date().toLocaleString('it-IT', { dateStyle: 'short', timeStyle: 'short' });
+
+      receiptContent.innerHTML = `
+        <div><span class="small">Codice prenotazione</span><br><strong>${reservationCode}</strong></div>
+        <div><span class="small">Data pagamento</span><br><strong>${paymentTime}</strong></div>
+        <div><span class="small">Utente</span><br><strong>${auth.user.username}</strong></div>
+        <div><span class="small">Posto</span><br><strong>#${draftBooking.placeId}</strong></div>
+        <div><span class="small">Veicolo</span><br><strong>${draftBooking.plate}</strong></div>
+        <div><span class="small">Modello</span><br><strong>${draftBooking.model}</strong></div>
+        <div><span class="small">Data</span><br><strong>${draftBooking.date}</strong></div>
+        <div><span class="small">Orario</span><br><strong>${draftBooking.time}</strong></div>
+        <div><span class="small">Tipo</span><br><strong>${draftBooking.isElectric ? 'Elettrica' : 'Standard'}</strong></div>
+        <div><span class="small">Batteria</span><br><strong>${draftBooking.isElectric ? `${draftBooking.battery}%` : 'N/A'}</strong></div>
+        <div><span class="small">Importo pagato</span><br><strong>${euro(draftBooking.total)}</strong></div>
+        <div><span class="small">Esito</span><br><strong>Pagamento simulato approvato</strong></div>
+      `;
+
+      receiptBox.style.display = 'block';
+      showStatus('Pagamento simulato approvato. Ricevuta generata.');
+
+      setTimeout(() => {
+        window.location.href = '/dashboard.html';
+      }, 1200);
+    });
+
+    document.getElementById('backToBooking').addEventListener('click', () => {
+      window.location.href = '/dashboard.html';
+    });
+
+    renderParkingGrid();
+    setSuggestedSpot();
+    updatePricing();
+  </script>
+</body>
+</html>

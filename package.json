@@ -1,0 +1,33 @@
+{
+  "name": "pissir",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node config/server.js",
+    "dev": "nodemon config/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "axios": "^1.4.0",
+    "express-session": "^1.17.3",
+    "keycloak-connect": "^21.0.0",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "mqtt": "^5.10.3",
+    "pg": "^8.13.3",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.5"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "sequelize-mock": "^0.10.2",
+    "sqlite3": "^5.1.7",
+    "nodemon": "^2.0.22"
+  }
+}

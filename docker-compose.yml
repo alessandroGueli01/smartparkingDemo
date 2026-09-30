@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: pissir
+      POSTGRES_PASSWORD: pissir
+      POSTGRES_DB: pissirdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+
+  java-backend:
+    build: ./java-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pissirdb
+      SPRING_DATASOURCE_USERNAME: pissir
+      SPRING_DATASOURCE_PASSWORD: pissir
+      JWT_SECRET: svilupposegreto
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - mosquitto
+
+volumes:
+  pgdata:

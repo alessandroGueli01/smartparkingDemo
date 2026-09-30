@@ -1,0 +1,35 @@
+{
+  "info": {
+    "name": "PISSIR API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "http://localhost:3000/api/register",
+        "body": { "mode": "raw", "raw": "{\"username\":\"u1\",\"password\":\"p\"}" }
+      }
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "http://localhost:3000/api/login",
+        "body": { "mode": "raw", "raw": "{\"username\":\"u1\",\"password\":\"p\"}" }
+      }
+    },
+    {
+      "name": "Create Booking",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "http://localhost:3000/api/java/bookings",
+        "body": { "mode": "raw", "raw": "{\"userId\":1,\"placeId\":1,\"targa\":\"AB123CD\",\"orarioArrivo\":null,\"durataMinuti\":60}" }
+      }
+    }
+  ]
+}
