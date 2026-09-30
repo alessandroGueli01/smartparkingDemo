@@ -201,3 +201,4 @@ npm run dev
 
 Non è un errore critico nel setup universitario: il fallback locale lo gestisce automaticamente.
 Progetto sviluppato come demo di gestione di un parcheggio per veicoli termici ed elettrici, con o senza ricarica, tramite architettura Node + API REST + frontend statico.
+# smartparkingDemo
