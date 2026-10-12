@@ -26,6 +26,7 @@ public class AuthControllerTest {
     public void registerAndLogin() throws Exception {
         User u = new User();
         u.setUsername("testuser");
+        u.setEmail("testuser@example.test");
         u.setPassword("testpass");
         u.setTipo("base");
 
@@ -38,5 +39,11 @@ public class AuthControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(u)))
                 .andExpect(status().isOk());
+
+        u.setUsername("testuser@example.test");
+        mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(u)))
+            .andExpect(status().isOk());
     }
 }

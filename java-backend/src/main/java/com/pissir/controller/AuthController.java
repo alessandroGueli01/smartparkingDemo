@@ -23,24 +23,43 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User u) {
-        Optional<User> existing = userRepository.findByUsername(u.getUsername());
-        if (existing.isPresent()) return ResponseEntity.badRequest().body("Username already exists");
+        String username = u.getUsername() == null ? "" : u.getUsername().trim();
+        String email = u.getEmail() == null ? "" : u.getEmail().trim().toLowerCase();
+        if (username.isEmpty() || u.getPassword() == null || u.getPassword().isEmpty()) {
+            return ResponseEntity.badRequest().body("Username and password are required");
+        }
+        if (userRepository.findByUsernameIgnoreCase(username).isPresent() ||
+                (!email.isEmpty() && userRepository.findByEmailIgnoreCase(email).isPresent())) {
+            return ResponseEntity.status(409).body("Username or email already exists");
+        }
+        u.setUsername(username);
+        u.setEmail(email.isEmpty() ? null : email);
         u.setTipo(u.getTipo() == null ? "base" : u.getTipo());
         User saved = userRepository.save(u);
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.ok(toSafeUser(saved));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User credentials) {
-        Optional<User> u = userRepository.findByUsername(credentials.getUsername());
-        if (u.isPresent() && u.get().getPassword().equals(credentials.getPassword())) {
+        String identifier = credentials.getUsername() == null ? "" : credentials.getUsername().trim();
+        Optional<User> u = userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase(identifier, identifier);
+        if (u.isPresent() && u.get().getPassword() != null &&
+                u.get().getPassword().equals(credentials.getPassword())) {
             String token = jwtUtil.generateToken(String.valueOf(u.get().getId()));
             Map<String, Object> resp = new HashMap<>();
             resp.put("token", token);
-            resp.put("user", u.get());
+            resp.put("user", toSafeUser(u.get()));
             return ResponseEntity.ok(resp);
         }
         return ResponseEntity.status(401).body("Invalid credentials");
+    }
+
+    private Map<String, Object> toSafeUser(User user) {
+        Map<String, Object> safeUser = new HashMap<>();
+        safeUser.put("id", user.getId());
+        safeUser.put("username", user.getUsername());
+        safeUser.put("tipo", user.getTipo());
+        return safeUser;
     }
 
     @DeleteMapping("/users/{id}")

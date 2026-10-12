@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/api/java/auth/login`, {
+      const res = await fetch(`${API_BASE}/api/login`, {
         method: 'POST', headers: {'Content-Type':'application/json'},
         body: JSON.stringify({username, password})
       });
@@ -106,17 +106,23 @@ document.addEventListener('DOMContentLoaded', () => {
   if (regBtn) regBtn.addEventListener('click', async () => {
     const username = document.getElementById('reg-username').value.trim();
     const password = document.getElementById('reg-password').value.trim();
+    const email = document.getElementById('reg-email').value.trim().toLowerCase();
     const tipo = 'base';
 
-    if (!username || !password) {
-      showMessage('Registrazione', 'Inserisci username e password', 'error');
+    if (!username || !email || !password) {
+      showMessage('Registrazione', 'Inserisci username, email e password', 'error');
+      return;
+    }
+
+    if (!document.getElementById('reg-email').checkValidity()) {
+      showMessage('Registrazione', 'Inserisci un indirizzo email valido', 'error');
       return;
     }
 
     try {
       const res = await fetch(`${API_BASE}/api/register`, {
         method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({username, password, tipo})
+        body: JSON.stringify({username, email, password, tipo})
       });
 
       let data = {};
@@ -134,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
           showMessage('Registrazione completata', `${data.username || username} è stato registrato correttamente. Esegui il login manuale.`, 'error');
         }
       } else if (res.status === 409) {
-        showMessage('Registrazione fallita', 'Questo username è già stato usato', 'error');
+        showMessage('Registrazione fallita', 'Username o email già utilizzati', 'error');
       } else {
         showMessage('Registrazione fallita', formatApiError(data, 'Impossibile completare la registrazione'), 'error');
       }

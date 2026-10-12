@@ -52,6 +52,7 @@ describe('persistent local accounts and unique plates', () => {
 
         const registration = await post(baseUrl, '/api/register', {
             username: 'persisted-user',
+            email: 'persisted@example.test',
             password: 'demo-password'
         });
         expect(registration.status).toBe(200);
@@ -74,12 +75,18 @@ describe('persistent local accounts and unique plates', () => {
         router = require('../config/apiRest');
         ({ server, baseUrl } = await createServer(router));
 
-        const login = await post(baseUrl, '/api/java/auth/login', {
-            username: 'persisted-user',
+        const login = await post(baseUrl, '/api/login', {
+            username: 'persisted@example.test',
             password: 'demo-password'
         });
         expect(login.status).toBe(200);
         expect(axios.post).not.toHaveBeenCalled();
+
+        const usernameLogin = await post(baseUrl, '/api/login', {
+            username: 'persisted-user',
+            password: 'demo-password'
+        });
+        expect(usernameLogin.status).toBe(200);
 
         const duplicatePlate = await post(baseUrl, '/api/plates/check', {
             plate: 'AB123CD',

@@ -346,8 +346,213 @@
       font-weight: 700;
     }
 
+    .payment-card-wrap {
+      width: 100%;
+      perspective: 1000px;
+      margin: 4px 0 10px;
+    }
+
+    .payment-card {
+      position: relative;
+      width: min(100%, 420px);
+      aspect-ratio: 420 / 236;
+      margin: 0 auto;
+      transform-style: preserve-3d;
+      transition: transform 0.6s ease;
+    }
+
+    .payment-card.is-flipped {
+      transform: rotateY(180deg);
+    }
+
+    .payment-card__side {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      padding: 22px 26px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      background: linear-gradient(135deg, #373b42, #17191f 72%);
+      box-shadow: 0 18px 36px rgba(0,0,0,0.3);
+      color: #fff;
+      backface-visibility: hidden;
+    }
+
+    .payment-card__side::before,
+    .payment-card__side::after {
+      position: absolute;
+      z-index: 0;
+      width: 210px;
+      height: 210px;
+      border: 1px solid rgba(255,235,167,0.17);
+      border-radius: 50%;
+      content: '';
+      pointer-events: none;
+    }
+
+    .payment-card__side::before {
+      top: -124px;
+      right: -54px;
+    }
+
+    .payment-card__side::after {
+      right: -110px;
+      bottom: -158px;
+      border-color: rgba(96,165,250,0.2);
+    }
+
+    .payment-card__back {
+      padding: 34px 0 0;
+      transform: rotateY(180deg);
+    }
+
+    .payment-card__header,
+    .payment-card__number,
+    .payment-card__footer,
+    .payment-card__cvv {
+      position: relative;
+      z-index: 1;
+    }
+
+    .payment-card__header,
+    .payment-card__footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .payment-card__brand {
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .payment-card__logo {
+      display: flex;
+      align-items: center;
+      width: 52px;
+      height: 32px;
+    }
+
+    .payment-card__logo span {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+
+    .payment-card__logo span + span {
+      margin-left: -8px;
+      background: #f79e1b;
+      opacity: 0.95;
+    }
+
+    .payment-card__logo span:first-child {
+      background: #eb001b;
+    }
+
+    .payment-card__number {
+      margin: 24px 0 22px;
+      font-size: clamp(1rem, 4vw, 1.35rem);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .payment-card__footer {
+      align-items: end;
+      text-transform: uppercase;
+    }
+
+    .payment-card__detail-label {
+      display: block;
+      margin-bottom: 3px;
+      color: rgba(255,255,255,0.62);
+      font-size: 0.58rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    .payment-card__holder {
+      overflow: hidden;
+      max-width: 230px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .payment-card__expiry {
+      font-size: 0.76rem;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .payment-card__stripe {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 38px;
+      background: #101216;
+    }
+
+    .payment-card__cvv {
+      display: grid;
+      justify-items: end;
+      gap: 5px;
+      margin: 20px 26px 0;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .payment-card__cvv-value {
+      display: flex;
+      align-items: center;
+      justify-content: end;
+      width: 100%;
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 5px;
+      background: #e8e8e8;
+      color: #181a1e;
+      font-size: 1rem;
+      letter-spacing: 0.18em;
+    }
+
+    .payment-card__highlight {
+      position: absolute;
+      z-index: 2;
+      display: none;
+      border: 1px solid rgba(255,235,167,0.85);
+      border-radius: 7px;
+      box-shadow: 0 0 0 1px rgba(255,235,167,0.12), 0 0 14px rgba(255,235,167,0.2);
+      pointer-events: none;
+      transition: all 0.2s ease;
+    }
+
+    .payment-card__highlight.is-number,
+    .payment-card__highlight.is-holder,
+    .payment-card__highlight.is-expiry,
+    .payment-card__highlight.is-cvv {
+      display: block;
+    }
+
+    .payment-card__highlight.is-number { top: 39%; left: 5%; width: 90%; height: 20%; }
+    .payment-card__highlight.is-holder { top: 68%; left: 5%; width: 57%; height: 23%; }
+    .payment-card__highlight.is-expiry { top: 68%; right: 5%; width: 29%; height: 23%; }
+    .payment-card__highlight.is-cvv { top: 32%; left: 5%; width: 90%; height: 38%; }
+
     @media (max-width: 900px) {
       .layout, .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .payment-card__side { padding: 18px 20px; }
+      .payment-card__back { padding: 28px 0 0; }
+      .payment-card__number { margin: 19px 0; }
+      .payment-card__cvv { margin: 17px 20px 0; }
     }
   </style>
 </head>
@@ -438,25 +643,56 @@
         <h2>Dettagli carta</h2>
 
         <form id="paymentForm">
+          <div class="payment-card-wrap" aria-hidden="true">
+            <div id="paymentCard" class="payment-card">
+              <div class="payment-card__side payment-card__front">
+                <div id="cardHighlight" class="payment-card__highlight"></div>
+                <div class="payment-card__header">
+                  <span class="payment-card__brand">PISSIR</span>
+                  <span class="payment-card__logo"><span></span><span></span></span>
+                </div>
+                <div id="cardPreviewNumber" class="payment-card__number">#### #### #### ####</div>
+                <div class="payment-card__footer">
+                  <div class="payment-card__holder-wrap">
+                    <span class="payment-card__detail-label">Titolare carta</span>
+                    <div id="cardPreviewHolder" class="payment-card__holder">NOME COGNOME</div>
+                  </div>
+                  <div>
+                    <span class="payment-card__detail-label">Scadenza</span>
+                    <div class="payment-card__expiry"><span id="cardPreviewMonth">MM</span>/<span id="cardPreviewYear">YY</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="payment-card__side payment-card__back">
+                <div class="payment-card__stripe"></div>
+                <div id="cardHighlightBack" class="payment-card__highlight"></div>
+                <div class="payment-card__cvv">
+                  <span>CVV</span>
+                  <span id="cardPreviewCvv" class="payment-card__cvv-value">***</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <label class="field">
             <span>Numero carta</span>
-            <input id="cardNumber" type="text" inputmode="numeric" maxlength="19" placeholder="1234 5678 9012 3456" required>
+            <input id="cardNumber" type="text" inputmode="numeric" autocomplete="cc-number" maxlength="19" placeholder="1234 5678 9012 3456" required>
           </label>
 
           <label class="field">
             <span>Titolare carta</span>
-            <input id="cardName" type="text" placeholder="Mario Rossi" required>
+            <input id="cardName" type="text" autocomplete="cc-name" placeholder="Mario Rossi" required>
           </label>
 
           <div class="grid-2">
             <label class="field">
               <span>Scadenza</span>
-              <input id="cardExpiry" type="text" maxlength="5" placeholder="MM/YY" required>
+              <input id="cardExpiry" type="text" inputmode="numeric" autocomplete="cc-exp" maxlength="5" placeholder="MM/YY" required>
             </label>
 
             <label class="field">
               <span>CVV</span>
-              <input id="cardCvv" type="password" maxlength="3" inputmode="numeric" placeholder="123" required>
+              <input id="cardCvv" type="password" autocomplete="cc-csc" maxlength="3" inputmode="numeric" placeholder="123" required>
             </label>
           </div>
 
@@ -651,13 +887,62 @@
       return `${digits.slice(0, 2)}/${digits.slice(2)}`;
     }
 
+    const paymentCard = document.getElementById('paymentCard');
+    const cardHighlight = document.getElementById('cardHighlight');
+    const cardHighlightBack = document.getElementById('cardHighlightBack');
+
+    function updatePaymentCardPreview() {
+      const digits = document.getElementById('cardNumber').value.replace(/\D/g, '').slice(0, 16);
+      const previewNumber = Array.from({ length: 16 }, (_, index) => {
+        if (index >= digits.length) return '#';
+        return index >= 4 && index < 12 ? '*' : digits[index];
+      }).join('').match(/.{1,4}/g).join(' ');
+      document.getElementById('cardPreviewNumber').textContent = previewNumber;
+
+      const cardName = document.getElementById('cardName').value.trim();
+      document.getElementById('cardPreviewHolder').textContent = cardName || 'NOME COGNOME';
+
+      const expiryParts = document.getElementById('cardExpiry').value.split('/');
+      document.getElementById('cardPreviewMonth').textContent = expiryParts[0] || 'MM';
+      document.getElementById('cardPreviewYear').textContent = expiryParts[1] || 'YY';
+
+      const cvvLength = document.getElementById('cardCvv').value.length;
+      document.getElementById('cardPreviewCvv').textContent = '*'.repeat(cvvLength || 3);
+    }
+
+    function focusCardField(field) {
+      cardHighlight.className = 'payment-card__highlight';
+      cardHighlightBack.className = 'payment-card__highlight';
+      paymentCard.classList.toggle('is-flipped', field === 'cvv');
+      (field === 'cvv' ? cardHighlightBack : cardHighlight).classList.add(`is-${field}`);
+    }
+
     document.getElementById('cardNumber').addEventListener('input', function () {
       this.value = formatCardNumber(this.value);
+      updatePaymentCardPreview();
     });
 
     document.getElementById('cardExpiry').addEventListener('input', function () {
       this.value = formatExpiry(this.value);
+      updatePaymentCardPreview();
     });
+
+    document.getElementById('cardName').addEventListener('input', updatePaymentCardPreview);
+    document.getElementById('cardCvv').addEventListener('input', function () {
+      this.value = this.value.replace(/\D/g, '').slice(0, 3);
+      updatePaymentCardPreview();
+    });
+
+    document.getElementById('cardNumber').addEventListener('focus', () => focusCardField('number'));
+    document.getElementById('cardName').addEventListener('focus', () => focusCardField('holder'));
+    document.getElementById('cardExpiry').addEventListener('focus', () => focusCardField('expiry'));
+    document.getElementById('cardCvv').addEventListener('focus', () => focusCardField('cvv'));
+    document.getElementById('cardCvv').addEventListener('blur', () => {
+      paymentCard.classList.remove('is-flipped');
+      cardHighlightBack.className = 'payment-card__highlight';
+    });
+
+    updatePaymentCardPreview();
 
     isElectricCheckbox.addEventListener('change', () => {
       batteryField.classList.toggle('hidden', !isElectricCheckbox.checked);

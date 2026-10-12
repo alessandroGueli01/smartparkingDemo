@@ -86,11 +86,12 @@ const toSafeUser = (user) => ({
 const normalizeUser = (payload) => {
     const username = String(payload?.username || '').trim();
     const password = String(payload?.password || '').trim();
-    return { username, password };
+    const email = String(payload?.email || '').trim().toLowerCase();
+    return { username, password, email };
 };
 
 const fallbackRegister = (payload) => {
-    const { username, password } = normalizeUser(payload);
+    const { username, password, email } = normalizeUser(payload);
     const tipo = payload?.tipo || 'base';
 
     if (!username || !password) {
@@ -102,9 +103,14 @@ const fallbackRegister = (payload) => {
         return { status: 409, body: { error: 'Username already exists' } };
     }
 
+    if (email && localData.users.some(user => String(user.email || '').toLowerCase() === email)) {
+        return { status: 409, body: { error: 'Email already exists' } };
+    }
+
     const user = {
         id: nextUserId++,
         username,
+        ...(email ? { email } : {}),
         passwordHash: hashPassword(password),
         tipo: 'base'
     };
@@ -121,7 +127,10 @@ const fallbackLogin = (payload) => {
         return { status: 400, body: { error: 'username and password are required' } };
     }
 
-    const found = localData.users.find(user => user.username.toLowerCase() === username.toLowerCase());
+    const identifier = username.toLowerCase();
+    const found = localData.users.find(user =>
+        user.username.toLowerCase() === identifier || String(user.email || '').toLowerCase() === identifier
+    );
     if (!found || !verifyPassword(password, found.passwordHash)) {
         return { status: 401, body: { error: 'Invalid credentials' } };
     }
